@@ -1,0 +1,79 @@
+﻿@inject IRepository repository
+@inject IToastService toastService
+
+<GenericList TList="Products">
+    <Records>
+        <table class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Cod Producto</th>
+                    <th>Nombre</th>
+                    <th>Valor Unitario</th>
+                  
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var forecast in Products)
+                {
+                <tr>
+
+                    <td>@forecast.Id</td>
+                    <td>@forecast.name</td>
+                    <td>@forecast.unitprice </td>
+                    <td>
+                    <button class="btn btn-outline-danger" @onclick="@(() => DeleteProduct(forecast))">Delete</button>
+                    <button class="btn btn-outline-primary" @onclick="@(() => OnValidSubmit.InvokeAsync(forecast))">Edit</button>
+                    </td>
+                </tr>
+}
+            </tbody>
+        </table>
+    </Records>
+</GenericList>
+
+<Confirmation @ref="confirmation" onConfirm="DeleteServiceConfirmation"
+              onCancel="onCancelConfirmation">
+    <div>¿Seguro que quiere elminar este registro?</div>
+</Confirmation>
+
+@code { 
+    Confirmation confirmation;
+    [Parameter] public List<ProductDTO> Products { get; set; }
+    [Parameter] public EventCallback<ProductDTO> OnValidSubmit { get; set; }
+  
+
+
+
+    bool MostrarBotones = true;
+
+    void DeleteProduct(ProductDTO product)
+    {
+        confirmation.Show();
+        deleteproduct = product;
+
+    }
+    ProductDTO deleteproduct;
+    async Task DeleteServiceConfirmation()
+    {
+        var responeHttp = await repository.Delete($"api/Productos/{deleteproduct.Id}");
+        if (responeHttp.Error)
+        {
+            var body = await responeHttp.HttpResponseMessage.Content.ReadAsStringAsync();
+            toastService.ShowError(body, "Error!");
+        }
+        else
+        {
+            Products.Remove(deleteproduct);
+            confirmation.Hide();
+            deleteproduct = null;
+            toastService.ShowSuccess("Producto eliminado  correctamente", "Exito!");
+        }
+    }
+
+    void onCancelConfirmation()
+    {
+        confirmation.Hide();
+        deleteproduct = null;
+    }
+}

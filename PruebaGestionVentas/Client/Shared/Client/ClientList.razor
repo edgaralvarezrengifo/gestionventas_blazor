@@ -1,0 +1,78 @@
+﻿@inject IRepository repository
+@inject IToastService toastService
+
+<GenericList TList="Clients">
+    <Records>
+        <table class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Número de documento</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Teléfono</th>
+                  
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var forecast in Clients)
+                {
+            <tr>
+
+                <td>@forecast.DocumentId</td>
+                <td>@forecast.name</td>
+                <td>@forecast.lastname </td>
+                <td>@forecast.phone </td>
+                <td>
+                    <button class="btn btn-outline-danger" @onclick="@(() => DeleteClient(forecast))">Delete</button>
+                    <button class="btn btn-outline-primary" @onclick="@(() => OnValidSubmit.InvokeAsync(forecast))">Edit</button>
+                </td>
+            </tr>                }
+                        </tbody>
+                    </table>
+                </Records>
+            </GenericList>
+
+<Confirmation @ref="confirmation" onConfirm="DeleteServiceConfirmation"
+              onCancel="onCancelConfirmation">
+    <div>¿Seguro que quiere eliminar este registro?</div>
+</Confirmation>
+
+@code { Confirmation confirmation;
+    [Parameter] public List<ClientDTO> Clients{ get; set; }
+    [Parameter] public EventCallback<ClientDTO> OnValidSubmit { get; set; }
+
+
+
+    bool MostrarBotones = true;
+
+    void DeleteClient(ClientDTO cliente)
+    {
+        confirmation.Show();
+        deleteclient = cliente;
+
+    }
+    ClientDTO deleteclient;
+    async Task DeleteServiceConfirmation()
+    {
+        var responeHttp = await repository.Delete($"api/Clientes/{deleteclient.Id}");
+        if (responeHttp.Error)
+        {
+            var body = await responeHttp.HttpResponseMessage.Content.ReadAsStringAsync();
+            toastService.ShowError(body, "Error!");
+        }
+        else
+        {
+            Clients.Remove(deleteclient);
+            confirmation.Hide();
+            deleteclient = null;
+            toastService.ShowSuccess("Cliente eliminado correctamente", "Exito!");
+        }
+    }
+
+    void onCancelConfirmation()
+    {
+        confirmation.Hide();
+        deleteclient = null;
+    }
+    }

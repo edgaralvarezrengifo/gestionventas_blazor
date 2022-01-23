@@ -1,0 +1,47 @@
+﻿<div class="row">
+    <fieldset>
+        @if (option.Equals("Edit"))
+        {
+            <legend>Editar Producto</legend> 
+        }
+        else
+        {
+            <legend>Crear Producto</legend>
+        }
+
+        <EditForm Model="newProduct" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Nombres:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@newProduct.name" />
+                            <ValidationMessage For="@(() => newProduct.name)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Apellidos:</label>
+                        <div>
+                            <InputNumber class="form-control" @bind-Value="@newProduct.unitprice" />
+                            <ValidationMessage For="@(() => newProduct.unitprice)" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <button class="btn btn-outline-success" type="submit">Save</button>
+        </EditForm>
+    </fieldset>
+</div>
+
+@code { 
+    [Parameter] public ProductDTO newProduct { get; set; }
+    [Parameter] public string option { get; set; }
+    [Parameter] public EventCallback OnValidSubmit { get; set; } 
+    
+    
+}

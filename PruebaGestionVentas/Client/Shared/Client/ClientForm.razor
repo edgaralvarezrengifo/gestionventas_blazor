@@ -1,0 +1,69 @@
+﻿<div class="row">
+    <fieldset>
+        @if (option.Equals("Edit"))
+        {
+            <legend>Editar Cliente</legend>
+        }
+        else
+        {
+            <legend>Crear Cliente</legend>
+        }
+
+    <EditForm Model="newClient" OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator />
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Nombres:</label>
+                    <div>
+                        <InputText class="form-control" @bind-Value="@newClient.name" />
+                        <ValidationMessage For="@(() => newClient.name)" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Apellidos:</label>
+                    <div>
+                        <InputText class="form-control" @bind-Value="@newClient.lastname" />
+                        <ValidationMessage For="@(() => newClient.lastname)" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Número de Documento:</label>
+                        <div>
+                            <InputNumber class="form-control" @bind-Value="@newClient.DocumentId" />
+                            <ValidationMessage For="@(() => newClient.DocumentId)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Telefono:</label>
+                        <div>
+                            <InputNumber class="form-control" @bind-Value="@newClient.phone" />
+                            <ValidationMessage For="@(() => newClient.phone)" />
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+            <button class="btn btn-outline-success" type="submit">Save</button>
+</EditForm>
+    </fieldset>
+</div>
+
+@code { 
+    [Parameter] public ClientDTO newClient { get; set; }
+            [Parameter] public string option { get; set; }
+            [Parameter] public EventCallback OnValidSubmit { get; set; } 
+    
+    
+    }
