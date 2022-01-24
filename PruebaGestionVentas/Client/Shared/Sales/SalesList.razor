@@ -1,0 +1,77 @@
+﻿@inject IRepository repository
+@inject IToastService toastService
+
+<GenericList TList="Sales">
+    <Records>
+        <table class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Cod Venta</th>
+                    <th>Cliente</th>
+                    <th>Cantidad Productos</th>
+                    <th>Valor Total</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var forecast in Sales)
+                {
+<tr>
+
+    <td>@forecast.Id</td>
+    <td>@forecast.Client.name+" "+ @forecast.Client.lastname</td>
+    <td>@forecast.Productsquantity </td>
+    <td>@forecast.Totalprice </td>
+    <td>
+        <button class="btn btn-outline-danger" @onclick="@(() => DeleteProduct(forecast))">Delete</button>
+       
+    </td>
+</tr>}
+            </tbody>
+        </table>
+    </Records>
+</GenericList>
+
+<Confirmation @ref="confirmation" onConfirm="DeleteServiceConfirmation"
+              onCancel="onCancelConfirmation">
+    <div>¿Seguro que quiere elminar este registro?</div>
+</Confirmation>
+
+@code { Confirmation confirmation;
+    [Parameter] public List<SalesDTO> Sales { get; set; }
+
+
+
+
+
+    bool MostrarBotones = true;
+
+    void DeleteProduct(SalesDTO sale)
+    {
+        confirmation.Show();
+        deletesale = sale;
+
+    }
+    SalesDTO deletesale;
+    async Task DeleteServiceConfirmation()
+    {
+        var responeHttp = await repository.Delete($"api/Sales/{deletesale.Id}");
+        if (responeHttp.Error)
+        {
+            var body = await responeHttp.HttpResponseMessage.Content.ReadAsStringAsync();
+            toastService.ShowError(body, "Error!");
+        }
+        else
+        {
+            Sales.Remove(deletesale);
+            confirmation.Hide();
+            deletesale = null;
+            toastService.ShowSuccess("Producto eliminado  correctamente", "Exito!");
+        }
+    }
+
+    void onCancelConfirmation()
+    {
+        confirmation.Hide();
+        deletesale = null;
+    } }

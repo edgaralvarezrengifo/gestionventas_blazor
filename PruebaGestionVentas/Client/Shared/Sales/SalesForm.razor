@@ -1,0 +1,42 @@
+﻿<div class="row">
+    <fieldset class="border p-2">
+        @if (option.Equals("Edit"))
+        {
+<legend class="w-auto">Editar Venta</legend> }
+        else
+        {
+<legend class="w-auto">Registrar Venta</legend>}
+
+    <EditForm Model="newSale" OnValidSubmit="OnValidSubmit">
+        <DataAnnotationsValidator />
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Cliente:</label>
+                    <InputSelect class="form-control" @bind-Value="@clientId">
+                        @foreach (var client in Clients)
+                        {
+                             <option value="@client.Id">@client.name @client.lastname</option>}
+                    </InputSelect>
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <button class="btn btn-outline-success" type="submit">Guardar</button>
+    </EditForm>
+    </fieldset>
+</div>
+
+@code { 
+    [Parameter] public SalesDTO newSale { get; set; }
+    [Parameter] public List<ProductDTO> Products { get; set; }
+    [Parameter] public List<ClientDTO> Clients { get; set; }
+    [Parameter] public string clientId { get; set; }
+    [Parameter] public string option { get; set; }
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+
+    }

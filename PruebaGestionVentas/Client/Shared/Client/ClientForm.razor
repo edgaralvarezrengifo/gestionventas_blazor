@@ -1,37 +1,38 @@
 ﻿<div class="row">
-    <fieldset>
+    <fieldset class="border p-2">
         @if (option.Equals("Edit"))
         {
-            <legend>Editar Cliente</legend>
+            <legend class="w-auto">Editar Cliente</legend>
         }
         else
-        {
-            <legend>Crear Cliente</legend>
+        { 
+            <legend class="w-auto">Crear Cliente</legend>
         }
 
-    <EditForm Model="newClient" OnValidSubmit="OnValidSubmit">
-        <DataAnnotationsValidator />
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label>Nombres:</label>
-                    <div>
-                        <InputText class="form-control" @bind-Value="@newClient.name" />
-                        <ValidationMessage For="@(() => newClient.name)" />
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label>Apellidos:</label>
-                    <div>
-                        <InputText class="form-control" @bind-Value="@newClient.lastname" />
-                        <ValidationMessage For="@(() => newClient.lastname)" />
-                    </div>
-                </div>
-            </div>
 
-        </div>
+        <EditForm Model="newClient" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Nombres:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@newClient.name" />
+                            <ValidationMessage For="@(() => newClient.name)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Apellidos:</label>
+                        <div>
+                            <InputText class="form-control" @bind-Value="@newClient.lastname" />
+                            <ValidationMessage For="@(() => newClient.lastname)" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -55,8 +56,8 @@
 
 
             </div>
-            <button class="btn btn-outline-success" type="submit">Save</button>
-</EditForm>
+            <button class="btn btn-outline-success" type="submit">Guardar</button>
+        </EditForm>
     </fieldset>
 </div>
 

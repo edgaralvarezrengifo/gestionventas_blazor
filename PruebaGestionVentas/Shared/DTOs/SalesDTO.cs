@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace PruebaGestionVentas.Shared.DTOs
 {
-    class SalesDTO
+    public class SalesDTO
     {
-        public int SaleID { get; set; }
+        public int Id { get; set; }
         public int Productsquantity { get; set; }
         public decimal Totalprice { get; set; }
         public ClientDTO Client { get; set; }

@@ -1,12 +1,12 @@
 ﻿<div class="row">
-    <fieldset>
+    <fieldset  class="border p-2">
         @if (option.Equals("Edit"))
         {
-            <legend>Editar Producto</legend> 
+            <legend class="w-auto">Editar Producto</legend> 
         }
         else
         {
-            <legend>Crear Producto</legend>
+            <legend class="w-auto">Crear Producto</legend>
         }
 
         <EditForm Model="newProduct" OnValidSubmit="OnValidSubmit">
@@ -33,7 +33,7 @@
 
             </div>
 
-            <button class="btn btn-outline-success" type="submit">Save</button>
+            <button class="btn btn-outline-success" type="submit">Guardar</button>
         </EditForm>
     </fieldset>
 </div>

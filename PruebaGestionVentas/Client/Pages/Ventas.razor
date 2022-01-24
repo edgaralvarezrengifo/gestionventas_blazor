@@ -1,46 +1,150 @@
 ﻿@page "/ventas"
-@using PruebaGestionVentas.Shared
-@inject HttpClient Http
 
-<h1>Weather forecast</h1>
+@inject IRepository repository
+@inject IToastService toastService
 
-<p>This component demonstrates fetching data from the server.</p>
+<div>
+    <h3>Ventas</h3>
+    <SalesList Sales="Sales"  />
+    <div class="col-md-3" style="padding-left:0px;">
+        <Pagination ActualPage="actualpage" TotalPages="totalpages" SelectedPage="selectedpage" />
+    </div>
+</div>
 
-@if (forecasts == null)
+
+
+@if (isnew && id == 0)
 {
-    <p><em>Loading...</em></p>
-}
-else
+<br />
+                <SalesForm OnValidSubmit="AddServiceProvider" newSale="newSale" option="Create" Clients="Clients" Products="Products"></SalesForm> }
+
+                            else
+                            {
+                <button class="btn btn-outline-info" @onclick="shownew">Registrar Venta</button>}
+
+@if (id != 0)
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<br />
+                <SalesForm OnValidSubmit="EditServiceProvider"  newSale="newSale" option="Edit"></SalesForm>}
 
-@code {
-    private WeatherForecast[] forecasts;
 
-    protected override async Task OnInitializedAsync()
+
+@code { private bool isnew;
+
+    private bool isedit;
+
+    int id = 0;
+    private SalesDTO newSale = new SalesDTO();
+    private List<SalesDTO> Sales;
+    public List<ProductDTO> Products { get; set; }
+    public List<ClientDTO> Clients { get; set; }
+    string clientId { get; set; }
+
+    protected async override Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+        newSale.Client = new ClientDTO();
+
+        var responsehttp = await repository.Get<List<ProductDTO>>("api/Productos");
+        Products = responsehttp.Response;
+        var responsehttp2 = await repository.Get<List<ClientDTO>>("api/Clientes");
+        Clients = responsehttp2.Response;
+        await LoadData(1);
+        isnew = false;
+        isedit = false;
     }
 
-}
+    private async Task LoadData(int page)
+    {
+
+        var responsehttp = await repository.Get<List<SalesDTO>>($"api/Ventas?page={page}");
+        if (!responsehttp.Error)
+        {
+            Sales = responsehttp.Response;
+            var count = responsehttp.HttpResponseMessage.Headers.GetValues("countrecords").FirstOrDefault();
+            totalpages = int.Parse(responsehttp.HttpResponseMessage.Headers.GetValues("totalpages").FirstOrDefault());
+        }
+    }
+
+    private int actualpage = 1;
+
+    private int totalpages;
+
+    private async Task selectedpage(int page)
+    {
+        actualpage = page;
+        await LoadData(actualpage);
+
+    }
+
+    void shownew()
+    {
+        newSale = new SalesDTO();
+        isnew = true;
+        isedit = false;
+        id = 0;
+
+    }
+
+
+    void showedit(ClientDTO client)
+    {
+        id = client.Id;
+        newSale = Sales.Where(x => x.Id == id).FirstOrDefault();
+        Console.WriteLine("el id es:" + id);
+    }
+
+
+
+    private async Task AddServiceProvider()
+    {
+
+
+        isnew = false;
+
+
+        var httpResponse = await repository.Post("api/Ventas", newSale);
+        if (httpResponse.Error)
+        {
+            var body = await httpResponse.HttpResponseMessage.Content.ReadAsStringAsync();
+            toastService.ShowError(body, "Error!");
+        }
+        else
+        {
+            Sales.Add(newSale);
+
+            id = 0;
+            newSale = null;
+
+            toastService.ShowSuccess("Se ha creado el cliente correctamente", "Exito!");
+            await LoadData(actualpage);
+        }
+
+
+
+    }
+
+    async Task EditServiceProvider()
+    {
+        var httpResponse = await repository.Put("api/Ventas", newSale);
+
+        if (httpResponse.Error)
+        {
+            var body = await httpResponse.HttpResponseMessage.Content.ReadAsStringAsync();
+            toastService.ShowError(body, "Error!");
+        }
+        else
+        {
+
+            var indexOf = Sales.IndexOf(Sales.Find(p => p.Id == newSale.Id));
+            Sales[indexOf] = newSale;
+            id = 0;
+            newSale = null;
+
+            toastService.ShowSuccess("Se ha editado el cliente correctamente", "Exito!");
+        }
+
+
+
+    }
+
+    }
