@@ -19,7 +19,7 @@
 <tr>
 
     <td>@forecast.Id</td>
-    <td>@forecast.Client.name+" "+ @forecast.Client.lastname</td>
+    <td>@forecast.Client.name  @forecast.Client.lastname</td>
     <td>@forecast.Productsquantity </td>
     <td>@forecast.Totalprice </td>
     <td>
@@ -55,7 +55,7 @@
     SalesDTO deletesale;
     async Task DeleteServiceConfirmation()
     {
-        var responeHttp = await repository.Delete($"api/Sales/{deletesale.Id}");
+        var responeHttp = await repository.Delete($"api/Ventas/{deletesale.Id}");
         if (responeHttp.Error)
         {
             var body = await responeHttp.HttpResponseMessage.Content.ReadAsStringAsync();

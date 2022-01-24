@@ -6,25 +6,45 @@
         else
         {
 <legend class="w-auto">Registrar Venta</legend>}
-
-    <EditForm Model="newSale" OnValidSubmit="OnValidSubmit">
+        
+    <EditForm Model="newSaleDto" OnValidSubmit="OnValidSubmit">
         <DataAnnotationsValidator />
 
         <div class="row">
             <div class="col-md-12">
                 <div class="form-group">
                     <label>Cliente:</label>
-                    <InputSelect class="form-control" @bind-Value="@clientId">
-                        @foreach (var client in Clients)
+                    <InputSelect class="form-control" @bind-Value="@newSaleDto.ClientId">
+                        @foreach (var cli in Clients)
                         {
-                             <option value="@client.Id">@client.name @client.lastname</option>}
+                            <option value="@cli.Id">@cli.name @cli.lastname</option>}
                     </InputSelect>
 
                 </div>
             </div>
         </div>
 
+        <div class="row">
+    
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Producto:</label>
+                    <InputSelect class="form-control" @bind-Value="@newSaleDto.ProductId">
+                        @foreach (var product in Products)
+                        {
+        <option value="@product.Id">@product.name </option>}
+                    </InputSelect>
 
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Cantidad:</label>
+                    <InputNumber class="form-control" @bind-Value="@newSaleDto.cantidad" />
+
+                </div>
+            </div>
+        </div>
 
         <button class="btn btn-outline-success" type="submit">Guardar</button>
     </EditForm>
@@ -32,11 +52,13 @@
 </div>
 
 @code { 
-    [Parameter] public SalesDTO newSale { get; set; }
+    [Parameter] public newSaleDTO newSaleDto{ get; set; }
     [Parameter] public List<ProductDTO> Products { get; set; }
     [Parameter] public List<ClientDTO> Clients { get; set; }
     [Parameter] public string clientId { get; set; }
+    [Parameter] public string productId { get; set; }
     [Parameter] public string option { get; set; }
+    [Parameter] public int cantidad { get; set; }
     [Parameter] public EventCallback OnValidSubmit { get; set; }
 
     }

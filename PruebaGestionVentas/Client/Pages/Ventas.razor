@@ -2,10 +2,11 @@
 
 @inject IRepository repository
 @inject IToastService toastService
+@inject IJSRuntime JS
 
 <div>
     <h3>Ventas</h3>
-    <SalesList Sales="Sales"  />
+    <SalesList Sales="Sales" />
     <div class="col-md-3" style="padding-left:0px;">
         <Pagination ActualPage="actualpage" TotalPages="totalpages" SelectedPage="selectedpage" />
     </div>
@@ -16,16 +17,16 @@
 @if (isnew && id == 0)
 {
 <br />
-                <SalesForm OnValidSubmit="AddServiceProvider" newSale="newSale" option="Create" Clients="Clients" Products="Products"></SalesForm> }
+                <SalesForm OnValidSubmit="AddServiceProvider" newSaleDto="newsaledto" option="Create" Clients="Clients" Products="Products" productId="productId" clientId="clientId" cantidad="cantidad"></SalesForm> }
 
-                            else
-                            {
-                <button class="btn btn-outline-info" @onclick="shownew">Registrar Venta</button>}
+            else
+            {
+<button class="btn btn-outline-info" @onclick="shownew">Registrar Venta</button>}
 
 @if (id != 0)
 {
 <br />
-                <SalesForm OnValidSubmit="EditServiceProvider"  newSale="newSale" option="Edit"></SalesForm>}
+                <SalesForm OnValidSubmit="EditServiceProvider" newSale="newSale" option="Edit"></SalesForm>}
 
 
 
@@ -39,6 +40,12 @@
     public List<ProductDTO> Products { get; set; }
     public List<ClientDTO> Clients { get; set; }
     string clientId { get; set; }
+    string productId { get; set; }
+    int cantidad { get; set; }
+
+    private List<ProductDTO> Prods;
+    private List<ClientDTO> Clis;
+    private newSaleDTO newsaledto = new newSaleDTO();
 
     protected async override Task OnInitializedAsync()
     {
@@ -46,8 +53,10 @@
 
         var responsehttp = await repository.Get<List<ProductDTO>>("api/Productos");
         Products = responsehttp.Response;
+        Prods = Products;
         var responsehttp2 = await repository.Get<List<ClientDTO>>("api/Clientes");
         Clients = responsehttp2.Response;
+        Clis = Clients;
         await LoadData(1);
         isnew = false;
         isedit = false;
@@ -79,6 +88,7 @@
     void shownew()
     {
         newSale = new SalesDTO();
+        newsaledto = new newSaleDTO();
         isnew = true;
         isedit = false;
         id = 0;
@@ -98,9 +108,24 @@
     private async Task AddServiceProvider()
     {
 
-
+        Console.WriteLine(clientId);
+        Console.WriteLine(productId);
         isnew = false;
+        int idcliente = Convert.ToInt32(newsaledto.ClientId);
+        var indexOf = Clis.IndexOf(Clis.Find(p => p.Id == idcliente));
+        await JS.InvokeVoidAsync("console.log", $"index:{indexOf}");
+        int idproducto = Convert.ToInt32(newsaledto.ProductId);
+        var indexOfpro = Prods.IndexOf(Prods.Find(p => p.Id == idproducto));
+        await JS.InvokeVoidAsync("console.log", $"index2:{indexOfpro}");
+        await JS.InvokeVoidAsync("console.log", $"clientId:{newsaledto.ClientId}");
+        await JS.InvokeVoidAsync("console.log", $"productId:{newsaledto.ProductId}");
+        await JS.InvokeVoidAsync("console.log", $"cantidad:{newsaledto.cantidad}");
 
+        newSale.Client = Clis[indexOf];
+        newSale.Productsquantity = newsaledto.cantidad;
+        newSale.Products = new List<ProductDTO>();
+        newSale.Products.Add(Products[indexOfpro]);
+        newSale.Totalprice = Convert.ToDecimal(newsaledto.cantidad) * Prods[indexOfpro].unitprice;
 
         var httpResponse = await repository.Post("api/Ventas", newSale);
         if (httpResponse.Error)
@@ -115,7 +140,7 @@
             id = 0;
             newSale = null;
 
-            toastService.ShowSuccess("Se ha creado el cliente correctamente", "Exito!");
+            toastService.ShowSuccess("Se ha registrado la venta correctamente", "Exito!");
             await LoadData(actualpage);
         }
 
@@ -145,6 +170,4 @@
 
 
 
-    }
-
-    }
+    } }

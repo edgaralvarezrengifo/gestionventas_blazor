@@ -14,7 +14,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label>Nombres:</label>
+                        <label>Nombre Producto:</label>
                         <div>
                             <InputText class="form-control" @bind-Value="@newProduct.name" />
                             <ValidationMessage For="@(() => newProduct.name)" />
@@ -23,7 +23,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label>Apellidos:</label>
+                        <label>Cantidad:</label>
                         <div>
                             <InputNumber class="form-control" @bind-Value="@newProduct.unitprice" />
                             <ValidationMessage For="@(() => newProduct.unitprice)" />
