@@ -89,6 +89,7 @@
     {
         newSale = new SalesDTO();
         newsaledto = new newSaleDTO();
+        newsaledto.Products = new List<ProductSelected>();
         isnew = true;
         isedit = false;
         id = 0;
@@ -111,21 +112,27 @@
         Console.WriteLine(clientId);
         Console.WriteLine(productId);
         isnew = false;
+
+
+        newSale.Products = new List<ProductDTO>();
+        foreach (ProductSelected pro in newsaledto.Products)
+        {
+
+
+
+            var indexOfpro = Prods.IndexOf(Prods.Find(p => p.Id == pro.Id));
+            await JS.InvokeVoidAsync("console.log", $"index:{indexOfpro}");
+            newSale.Products.Add(Products[indexOfpro]);
+        }
+
         int idcliente = Convert.ToInt32(newsaledto.ClientId);
         var indexOf = Clis.IndexOf(Clis.Find(p => p.Id == idcliente));
-        await JS.InvokeVoidAsync("console.log", $"index:{indexOf}");
-        int idproducto = Convert.ToInt32(newsaledto.ProductId);
-        var indexOfpro = Prods.IndexOf(Prods.Find(p => p.Id == idproducto));
-        await JS.InvokeVoidAsync("console.log", $"index2:{indexOfpro}");
-        await JS.InvokeVoidAsync("console.log", $"clientId:{newsaledto.ClientId}");
-        await JS.InvokeVoidAsync("console.log", $"productId:{newsaledto.ProductId}");
-        await JS.InvokeVoidAsync("console.log", $"cantidad:{newsaledto.cantidad}");
+
 
         newSale.Client = Clis[indexOf];
-        newSale.Productsquantity = newsaledto.cantidad;
-        newSale.Products = new List<ProductDTO>();
-        newSale.Products.Add(Products[indexOfpro]);
-        newSale.Totalprice = Convert.ToDecimal(newsaledto.cantidad) * Prods[indexOfpro].unitprice;
+        newSale.Productsquantity = newsaledto.Products.Select(x=>x.count).Sum();
+
+        newSale.Totalprice = newsaledto.Products.Select(x => x.totalprice).Sum();
 
         var httpResponse = await repository.Post("api/Ventas", newSale);
         if (httpResponse.Error)
@@ -139,6 +146,7 @@
 
             id = 0;
             newSale = null;
+            newsaledto = null;
 
             toastService.ShowSuccess("Se ha registrado la venta correctamente", "Exito!");
             await LoadData(actualpage);

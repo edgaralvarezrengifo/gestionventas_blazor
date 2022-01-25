@@ -29,7 +29,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label>Producto:</label>
-                    <InputSelect class="form-control" @bind-Value="@newSaleDto.ProductId">
+                    <InputSelect class="form-control" @bind-Value="@productId">
                         @foreach (var product in Products)
                         {
         <option value="@product.Id">@product.name </option>}
@@ -38,11 +38,47 @@
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="form-group">
-                    <label>Cantidad:</label>
-                    <InputNumber class="form-control" @bind-Value="@newSaleDto.cantidad" />
-
+                <div class="input-group">
+                    <div class="form-group">
+                        <label>Cantidad:</label>
+                        <InputNumber class="form-control" @bind-Value="@cantidad" />
+                        <a class="btn btn-outline-primary"   @onclick="@AddProductSelected">Add</a>
+                    </div>
+                    </div>
                 </div>
+            </div>
+        
+        <div class="row">
+            <div class="col-md-10">
+                <label>Productos Seleccionados:</label>
+                <GenericList TList="newSaleDto.Products">
+                    <Records>
+                        <table class="table table-striped" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Cod Producto</th>
+                                    <th>Nombre Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var forecast in newSaleDto.Products)
+                                {
+            <tr>
+
+                <td>@forecast.Id</td>
+                <td>@forecast.productname</td>
+                <td>@forecast.count </td>
+
+                <td>
+                </td>
+            </tr>
+}
+                            </tbody>
+                        </table>
+                    </Records>
+                </GenericList>
             </div>
         </div>
 
@@ -60,5 +96,25 @@
     [Parameter] public string option { get; set; }
     [Parameter] public int cantidad { get; set; }
     [Parameter] public EventCallback OnValidSubmit { get; set; }
+
+
+    public void DeleteProductSelected(ProductSelected pro)
+    {
+        newSaleDto.Products.Remove(pro);
+    }
+
+
+    public void AddProductSelected()
+    {
+
+
+        int id = Convert.ToInt32(productId);
+        ProductSelected pro = new ProductSelected();
+        pro.Id = id;
+        pro.productname = Products.Where(x => x.Id == id).Select(x => x.name).FirstOrDefault();
+        pro.count = cantidad;
+        pro.totalprice =cantidad * Products.Where(x => x.Id == id).Select(x => x.unitprice).FirstOrDefault();
+        newSaleDto.Products.Add(pro);
+    }
 
     }

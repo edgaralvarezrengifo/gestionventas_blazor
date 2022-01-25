@@ -86,7 +86,7 @@ namespace PruebaGestionVentas.Server.Controllers
             }
             else
             {
-                context.Remove(new Producto { Id = id });
+                context.Remove(new Venta { Id = id });
                 await context.SaveChangesAsync();
                 return NoContent();
             }
@@ -110,11 +110,12 @@ namespace PruebaGestionVentas.Server.Controllers
                              Productsquantity = v.cantidad,
                              Totalprice = v.valor_total,
                              Client = new ClientDTO { Id = c.Id, DocumentId = c.cedula, name = c.nombre, lastname = c.apellido, creation_date = c.fecha_creacion, phone = c.telefono },
-                             Products = new List<ProductDTO>() { new ProductDTO { Id=p.Id,creationDate=p.fecha_creacion,name=p.nombre_producto,unitprice=p.valor_unitario,quantity=vd.Cantidad}  },
+                             Products = new List<ProductDTO>(),
                              SaleDate = v.fecha_venta
                          };
 
-            var queryabledto = result.AsQueryable();
+
+            var queryabledto = result.Distinct().AsQueryable();
 
             await HttpContext.InsertParametersPaginResponse(queryabledto, pagin.NRecords);
 
